@@ -1,0 +1,61 @@
+---
+title: "Trees"
+author: "Corine Meinema"
+date: "18 november 2018"
+output: slidy_presentation
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Trees dataset
+
+Rstudio has a dataset "trees" with three variables: Girth, Height and Volume. 
+
+## Working of the app
+In this presentation in the first tab you can choose which axes of the tree data you want to see. In the second tab the plot of the data is shown.
+
+
+## The sliders and the plot
+```{r}
+varname <- names(trees)
+
+ui <- fluidPage(
+          tabsetPanel(
+            tabPanel("Variables",
+              fluidRow(style = "padding-bottom: 20px;",
+                       column(4, selectInput('xcol', 'X Variable', varname)),
+                       column(4, selectInput('ycol', 'Y variable', varname,
+                                            selected = varname[2]))
+              )
+            ),
+            tabPanel("Plot", plotOutput(
+              outputId = "distPlot")
+            )
+          )
+)
+
+server <- function(input, output) {
+  selectedData = reactive({
+      trees[,c(input$xcol, input$ycol)]
+    })
+
+  # Histogram of the Old Faithful Geyser Data ----
+  # with requested number of bins
+  # This expression that generates a histogram is wrapped in a call
+  # to renderPlot to indicate that:
+  #
+  # 1. It is "reactive" and therefore should be automatically
+  #    re-executed when inputs (input$bins) change
+  # 2. Its output type is a plot
+  output$distPlot <- renderPlot({
+    plot(selectedData(), main = "Plot of the X variable and Y variable")
+    })
+}
+
+shinyApp(ui, server)
+```
+      
+## The end
